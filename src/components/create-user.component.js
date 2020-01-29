@@ -30,7 +30,7 @@ export default class CreateUser extends Component {
 		console.log(user);
 		try {
 			const response = await axios.post(
-				'http://localhost:5000/users/add',
+				'https://dashboard.heroku.com/apps/protected-garden-56513',
 				user
 			);
 			console.log(response.data);
