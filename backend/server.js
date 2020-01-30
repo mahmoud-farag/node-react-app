@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 require('dotenv').config();
 
@@ -9,14 +10,11 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
+const url = process.env.ATLAS_URI;
 mongoose
-	.connect('mongodb://127.0.0.1:27017/react-app', {
-		useNewUrlParser: true,
-		useCreateIndex: true
-	})
+	.connect(encodeURI(url), { useNewUrlParser: true, useCreateIndex: true })
 	.catch(e => {
-		console.log(e.message);
+		console.log(e);
 	});
 const connection = mongoose.connection;
 connection.once('open', () => {
@@ -25,6 +23,18 @@ connection.once('open', () => {
 
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
+
+if (process.env.NODE_ENV === 'production') {
+
+	server.use(express.static('./build'));
+
+	server.get('*', (res, req) => {
+
+		res.sendFile(path.resolve(__dirname, 'build', 'index.html'))
+	})
+}
+
+
 
 app.use('/exercises', exercisesRouter);
 app.use('/users', usersRouter);
